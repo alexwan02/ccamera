@@ -23,6 +23,7 @@ import static android.hardware.Camera.Parameters.FOCUS_MODE_AUTO;
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, CameraOverCallback {
     private static final String TAG = CameraPreview.class.getSimpleName();
     private Camera.Size mPreviewSize;
+    private Camera.Size mPictureSize;
     // private List<Camera.Size> mSupportedPreviewSizes;
     private float mPreviewRate;
     private int mFlashMode;
@@ -57,7 +58,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // the preview.
         Camera.Parameters parameters = mCamera.getParameters();
         parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
-        parameters.setPictureSize(mPreviewSize.width, mPreviewSize.height);
+        parameters.setPictureSize(mPictureSize.width, mPictureSize.height);
         // focusModes
         List<String> focusModes = parameters.getSupportedFocusModes();
         if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
@@ -83,9 +84,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
         setMeasuredDimension(width, height);
         List<Camera.Size> mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
+        List<Camera.Size> mSupportedPictureSizes = mCamera.getParameters().getSupportedPictureSizes();
         if (mSupportedPreviewSizes != null) {
             mPreviewSize = CameraUtil.getOptimalPreviewSize(mSupportedPreviewSizes,
                     Math.max(width, height), Math.min(width, height));
+
+            mPictureSize = CameraUtil.getOptimalPictureSize(mSupportedPictureSizes , mPreviewSize);
         }
     }
 
@@ -118,7 +122,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // get Camera parameters
         Camera.Parameters parameters = camera.getParameters();
         parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
-        parameters.setPictureSize(mPreviewSize.width, mPreviewSize.height);
+        parameters.setPictureSize(mPictureSize.width, mPictureSize.height);
         //
         List<String> focusModes = parameters.getSupportedFocusModes();
         if (focusModes.contains(FOCUS_MODE_AUTO)) {
@@ -156,7 +160,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void onResume(){
-        this.mCamera = CameraHelper.getInstance().doGetCameraInstance(Camera.CameraInfo.CAMERA_FACING_BACK);
+        // this.mCamera = CameraHelper.getInstance().doGetCameraInstance(Camera.CameraInfo.CAMERA_FACING_BACK);
         if(this.mCamera == null){
             Log.e("Camera" , "this.mCamera == null");
         }

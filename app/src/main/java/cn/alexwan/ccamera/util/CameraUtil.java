@@ -143,4 +143,28 @@ public class CameraUtil {
         }
         return optimalSize;
     }
+
+
+    public static Camera.Size getOptimalPictureSize(List<Camera.Size> sizes , Camera.Size previewSize) {
+        Camera.Size retSize = null;
+        for (Camera.Size size : sizes) {
+            if (size.equals(previewSize)) {
+                return size;
+            }
+        }
+        // if the preview size is not supported as a picture size
+        float reqRatio = ((float) previewSize.width) / previewSize.height;
+        float curRatio, deltaRatio;
+        float deltaRatioMin = Float.MAX_VALUE;
+        for (Camera.Size size : sizes) {
+            curRatio = ((float) size.width) / size.height;
+            deltaRatio = Math.abs(reqRatio - curRatio);
+            if (deltaRatio < deltaRatioMin) {
+                deltaRatioMin = deltaRatio;
+                retSize = size;
+            }
+        }
+
+        return retSize;
+    }
 }

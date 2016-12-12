@@ -55,7 +55,6 @@ public class CameraHelper {
 
     private Camera getCameraInstance(int cameraId) {
         try {
-
             mCamera = Camera.open(cameraId);
             mCameraId = cameraId;
         } catch (Exception e) {
