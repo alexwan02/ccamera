@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.os.Build;
+import android.util.Log;
 import android.view.Surface;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
  * Created by alexwan on 16/11/1.
  */
 public class CameraUtil {
-
+    private static final String TAG = CameraUtil.class.getSimpleName();
     /**
      * 是否有摄像头
      * @param context context
@@ -124,6 +125,7 @@ public class CameraUtil {
         double minDiff = Double.MAX_VALUE;
         for (Camera.Size size : sizes) {
             double radio = (double) size.width / size.height;
+            Log.i(TAG , "getOptimalPreviewSize : targetRadio " + targetRadio + " ; radio = " + radio);
             if (Math.abs(radio - targetRadio) > ASPECT_TOLERANCE) {
                 continue;
             }

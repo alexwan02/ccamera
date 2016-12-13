@@ -11,6 +11,7 @@ import java.util.List;
 import cn.alexwan.ccamera.CameraOverCallback;
 import cn.alexwan.ccamera.util.CameraHelper;
 import cn.alexwan.ccamera.util.CameraUtil;
+import cn.alexwan.ccamera.util.LogUtils;
 
 import static android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
 import static android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT;
@@ -78,19 +79,26 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         CameraHelper.getInstance().doStopPreview();
     }
 
+    private static final double ASPECT_RATIO = 4.0 / 3.0 ;
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
-        final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+        int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
+        int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+
         setMeasuredDimension(width, height);
         List<Camera.Size> mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
-        List<Camera.Size> mSupportedPictureSizes = mCamera.getParameters().getSupportedPictureSizes();
-        if (mSupportedPreviewSizes != null) {
-            mPreviewSize = CameraUtil.getOptimalPreviewSize(mSupportedPreviewSizes,
-                    Math.max(width, height), Math.min(width, height));
-
-            mPictureSize = CameraUtil.getOptimalPictureSize(mSupportedPictureSizes , mPreviewSize);
+        for (Camera.Size size : mSupportedPreviewSizes){
+            LogUtils.w(TAG , "mSupportedPreviewSizes : size " , size , " ; width = " , size.width ,
+                    " ; height = " , size.height);
         }
+        List<Camera.Size> mSupportedPictureSizes = mCamera.getParameters().getSupportedPictureSizes();
+        for (Camera.Size size : mSupportedPictureSizes){
+            LogUtils.w(TAG , "mSupportedPictureSizes : size " , size , " ; width = " , size.width ,
+                    " ; height = " , size.height);
+        }
+        mPreviewSize = CameraUtil.getOptimalPreviewSize(mSupportedPreviewSizes,
+                Math.max(width, height), Math.min(width, height));
+        mPictureSize = CameraUtil.getOptimalPictureSize(mSupportedPictureSizes , mPreviewSize);
     }
 
     @Override

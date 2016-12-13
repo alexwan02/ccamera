@@ -4,12 +4,14 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import cn.alexwan.ccamera.util.CameraHelper;
@@ -48,6 +50,8 @@ public class CaptureActivity extends AppCompatActivity implements View.OnClickLi
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
         }
+//        Intent startCustomCameraIntent = new Intent(this, CameraActivity.class);
+//        startActivityForResult(startCustomCameraIntent, 1000);
 
         mContainer = (FrameLayout) findViewById(R.id.container);
         mTakePictureBtn = findViewById(R.id.take_picture);
@@ -55,8 +59,13 @@ public class CaptureActivity extends AppCompatActivity implements View.OnClickLi
         // default camera degree
         int backFacingDegree = CameraUtil.getCameraDisplayOrientation(this, CAMERA_FACING_BACK);
         //
+        DisplayMetrics dm = new DisplayMetrics();
+        WindowManager wm = getWindowManager();
+        wm.getDefaultDisplay().getMetrics(dm);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(dm.widthPixels , dm.widthPixels);
         mCameraPreview = new CameraPreview(this, backFacingDegree);
-        mContainer.addView(mCameraPreview, 0);
+        mCameraPreview.setLayoutParams(params);
+        mContainer.addView(mCameraPreview, 1);
         mCameraCallback = mCameraPreview;
     }
 
