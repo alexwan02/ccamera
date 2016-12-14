@@ -25,12 +25,15 @@ public class CCameraPreview extends SurfaceView {
 
     private static final double ASPECT_RATIO = 3.0 / 4.0;
     private Camera mCamera;
+    private float mLastTouchX;
+    private float mLastTouchY;
 
     // For focus
     private boolean mIsFocus;
     private boolean mIsFocusReady;
     private Camera.Area mFocusArea;
     private ArrayList<Camera.Area> mFocusAreas;
+
 
     public CCameraPreview(Context context) {
         super(context);
@@ -48,14 +51,15 @@ public class CCameraPreview extends SurfaceView {
     }
 
     private void init(Context context) {
-        mFocusArea = new Camera.Area(new Rect() , 1000);
+        mFocusArea = new Camera.Area(new Rect(), 1000);
         mFocusAreas = new ArrayList<>();
         mFocusAreas.add(mFocusArea);
     }
 
     /**
      * Measure the view and its content to determine the measure width and the measure height
-     * @param widthMeasureSpec widthMeasureSpec
+     *
+     * @param widthMeasureSpec  widthMeasureSpec
      * @param heightMeasureSpec heightMeasureSpec
      */
     @Override
@@ -64,33 +68,33 @@ public class CCameraPreview extends SurfaceView {
         int height = MeasureSpec.getSize(heightMeasureSpec);
         // The Screen is portrait or not
         final boolean isPortrait = getResources().getConfiguration().orientation == ORIENTATION_PORTRAIT;
-        if(isPortrait){
-            if(width > height * ASPECT_RATIO){
+        if (isPortrait) {
+            if (width > height * ASPECT_RATIO) {
                 width = (int) (height * ASPECT_RATIO + 0.5);
             } else {
                 height = (int) (width / ASPECT_RATIO + 0.5);
             }
         } else {
-            if(height > width * ASPECT_RATIO){
+            if (height > width * ASPECT_RATIO) {
                 height = (int) (width * ASPECT_RATIO + 0.5);
             } else {
                 width = (int) (height / ASPECT_RATIO + 0.5);
             }
         }
-        setMeasuredDimension(width , height);
+        setMeasuredDimension(width, height);
     }
 
-    public int getViewWidth(){
+    public int getViewWidth() {
         return getWidth();
     }
 
-    public int getViewHeight(){
+    public int getViewHeight() {
         return getHeight();
     }
 
-    public void setCamera(Camera camera){
+    public void setCamera(Camera camera) {
         mCamera = camera;
-        if(camera != null){
+        if (camera != null) {
             Camera.Parameters params = camera.getParameters();
             // Zoom parameters
         }
@@ -99,20 +103,20 @@ public class CCameraPreview extends SurfaceView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         final int action = event.getAction();
-        switch (action & MotionEvent.ACTION_MASK){
+        switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 mIsFocus = true;
                 break;
-            case MotionEvent.ACTION_UP :
-                if(mIsFocus && mIsFocusReady){
+            case MotionEvent.ACTION_UP:
+                if (mIsFocus && mIsFocusReady) {
                     handleFocus(mCamera.getParameters());
                 }
                 break;
-            case MotionEvent.ACTION_POINTER_DOWN :
+            case MotionEvent.ACTION_POINTER_DOWN:
                 mCamera.cancelAutoFocus();
                 mIsFocus = false;
                 break;
-            case MotionEvent.ACTION_CANCEL :
+            case MotionEvent.ACTION_CANCEL:
 
                 break;
         }
@@ -123,22 +127,22 @@ public class CCameraPreview extends SurfaceView {
 
     }
 
-    public void setIsFocusReady(final boolean isFocusReady){
+    public void setIsFocusReady(final boolean isFocusReady) {
         mIsFocusReady = isFocusReady;
     }
 
-    private boolean setFocusBounds(float x , float y){
+    private boolean setFocusBounds(float x, float y) {
         int left = (int) (x - FOCUS_SQR_SIZE / 2);
         int right = (int) (x + FOCUS_SQR_SIZE / 2);
         int top = (int) (y - FOCUS_SQR_SIZE / 2);
-        int bottom = (int) (y + FOCUS_SQR_SIZE /2);
+        int bottom = (int) (y + FOCUS_SQR_SIZE / 2);
 
-        if(FOCUS_MIN_BOUND > left || left < FOCUS_MAX_BOUND ) return false;
-        if(FOCUS_MIN_BOUND > right || right < FOCUS_MAX_BOUND ) return false;
-        if(FOCUS_MIN_BOUND > top || top < FOCUS_MAX_BOUND ) return false;
-        if(FOCUS_MIN_BOUND > bottom || bottom < FOCUS_MAX_BOUND ) return false;
+        if (FOCUS_MIN_BOUND > left || left < FOCUS_MAX_BOUND) return false;
+        if (FOCUS_MIN_BOUND > right || right < FOCUS_MAX_BOUND) return false;
+        if (FOCUS_MIN_BOUND > top || top < FOCUS_MAX_BOUND) return false;
+        if (FOCUS_MIN_BOUND > bottom || bottom < FOCUS_MAX_BOUND) return false;
 
-        mFocusArea.rect.set(left , top , right , bottom);
+        mFocusArea.rect.set(left, top, right, bottom);
         return true;
     }
 
