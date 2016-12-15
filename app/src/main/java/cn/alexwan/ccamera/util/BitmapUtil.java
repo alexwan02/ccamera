@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.util.Base64;
@@ -15,10 +16,16 @@ import android.view.WindowManager;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import static android.media.ExifInterface.ORIENTATION_NORMAL;
+import static android.media.ExifInterface.ORIENTATION_ROTATE_180;
+import static android.media.ExifInterface.ORIENTATION_ROTATE_270;
+import static android.media.ExifInterface.ORIENTATION_ROTATE_90;
+import static android.media.ExifInterface.TAG_ORIENTATION;
 import static android.media.ThumbnailUtils.OPTIONS_RECYCLE_INPUT;
 import static android.os.Environment.DIRECTORY_PICTURES;
 import static android.os.Environment.getExternalStoragePublicDirectory;
@@ -29,6 +36,7 @@ import static android.os.Environment.getExternalStoragePublicDirectory;
  * Created by alexwan on 2016/12/13.
  */
 public class BitmapUtil {
+    private static final String TAG = BitmapUtil.class.getSimpleName();
 
     /**
      * Convert {@link Bitmap} to {@link String}
@@ -72,6 +80,33 @@ public class BitmapUtil {
             oldBitmap.recycle();
         }
         return bitmap;
+    }
+
+    /**
+     * Read Exif tags from a JPEG file.
+     * @param filePath filePath
+     * @return degree
+     */
+    public static int getImageDegree(String filePath){
+        int degree = 0;
+        try {
+            ExifInterface exifInterface = new ExifInterface(filePath);
+            int orientation = exifInterface.getAttributeInt(TAG_ORIENTATION , ORIENTATION_NORMAL);
+            switch (orientation){
+                case ORIENTATION_ROTATE_90 :
+                    degree = 90;
+                    break;
+                case ORIENTATION_ROTATE_180 :
+                    degree = 180;
+                    break;
+                case ORIENTATION_ROTATE_270:
+                    degree = 270;
+                    break;
+            }
+        } catch (IOException e) {
+            LogUtils.e(TAG , "getImageDegree error : " , e.getMessage());
+        }
+        return degree;
     }
 
     /**
