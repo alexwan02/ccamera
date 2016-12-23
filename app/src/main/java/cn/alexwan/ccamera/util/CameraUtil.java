@@ -10,23 +10,28 @@ import android.view.Surface;
 
 import java.util.List;
 
+import static android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT;
+
 /**
  * CameraUtil工具类
  * Created by alexwan on 16/11/1.
  */
 public class CameraUtil {
     private static final String TAG = CameraUtil.class.getSimpleName();
+
     /**
      * 是否有摄像头
+     *
      * @param context context
      * @return boolean
      */
-    public static boolean hasCamera(Context context){
+    public static boolean hasCamera(Context context) {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 
     /**
      * 检查是否存在指定的摄像头
+     *
      * @param facing facing
      * @return boolean
      */
@@ -46,7 +51,6 @@ public class CameraUtil {
     }
 
     /**
-     * 是否有后置摄像头
      * @return boolean
      */
     public static boolean hasBackFacingCamera() {
@@ -54,7 +58,6 @@ public class CameraUtil {
     }
 
     /**
-     * 是否有前置摄像头
      * @return boolean
      */
     public static boolean hasFrontFacingCamera() {
@@ -67,24 +70,26 @@ public class CameraUtil {
 
     /**
      * 获取拍照的正确方向
+     *
      * @param cameraId cameraId
      * @return rotation
      */
-    public static int getRotation(int cameraId) {
+    public static int getRotation(int cameraId, int orientation) {
         Camera.CameraInfo info = new Camera.CameraInfo();
         Camera.getCameraInfo(cameraId, info);
-        int orientation = 0;
         orientation = (orientation + 45) / 90 * 90;
         int rotation;
-        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+        if (info.facing == CAMERA_FACING_FRONT) {
             rotation = (info.orientation - orientation + 360) % 360;
         } else {  // back-facing camera
             rotation = (info.orientation + orientation) % 360;
         }
         return rotation;
     }
+
     /**
      * 设置Camera显示正确的方向
+     *
      * @param activity activity
      * @param cameraId cameraId
      */
@@ -94,13 +99,21 @@ public class CameraUtil {
         int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
         int degrees = 0;
         switch (rotation) {
-            case Surface.ROTATION_0: degrees = 0; break;
-            case Surface.ROTATION_90: degrees = 90; break;
-            case Surface.ROTATION_180: degrees = 180; break;
-            case Surface.ROTATION_270: degrees = 270; break;
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
         }
         int result;
-        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+        if (info.facing == CAMERA_FACING_FRONT) {
             result = (info.orientation + degrees) % 360;
             result = (360 - result) % 360;  // compensate the mirror
         } else {  // back-facing
@@ -112,9 +125,10 @@ public class CameraUtil {
 
     /**
      * get optimal preview size
+     *
      * @param sizes sizes
-     * @param w w
-     * @param h h
+     * @param w     w
+     * @param h     h
      * @return Camera.Size
      */
     public static Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
@@ -125,7 +139,7 @@ public class CameraUtil {
         double minDiff = Double.MAX_VALUE;
         for (Camera.Size size : sizes) {
             double radio = (double) size.width / size.height;
-            Log.i(TAG , "getOptimalPreviewSize : targetRadio " + targetRadio + " ; radio = " + radio);
+            Log.i(TAG, "getOptimalPreviewSize : targetRadio " + targetRadio + " ; radio = " + radio);
             if (Math.abs(radio - targetRadio) > ASPECT_TOLERANCE) {
                 continue;
             }
@@ -147,7 +161,7 @@ public class CameraUtil {
     }
 
 
-    public static Camera.Size getOptimalPictureSize(List<Camera.Size> sizes , Camera.Size previewSize) {
+    public static Camera.Size getOptimalPictureSize(List<Camera.Size> sizes, Camera.Size previewSize) {
         Camera.Size retSize = null;
         for (Camera.Size size : sizes) {
             if (size.equals(previewSize)) {

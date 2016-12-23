@@ -66,7 +66,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             // Autofocus mode is supported
             parameters.setFocusMode(FOCUS_MODE_AUTO);
         }
-        parameters.setRotation(CameraUtil.getRotation(0));
+        parameters.setRotation(CameraUtil.getRotation(0 , 0));
         mCamera.setParameters(parameters);
         //
 
@@ -137,7 +137,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             // Autofocus mode is supported
             parameters.setFocusMode(FOCUS_MODE_AUTO);
         }
-        parameters.setRotation(CameraUtil.getRotation(cameraId == CAMERA_FACING_FRONT ? CAMERA_FACING_BACK : CAMERA_FACING_FRONT));
+        parameters.setRotation(CameraUtil.getRotation(cameraId == CAMERA_FACING_FRONT ? CAMERA_FACING_BACK : CAMERA_FACING_FRONT , 0));
         camera.setParameters(parameters);
         // set correct display orientation
         camera.setDisplayOrientation(mDegree);
